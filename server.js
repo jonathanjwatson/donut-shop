@@ -48,13 +48,10 @@ app.get("/api/donuts", (req, res) => {
   });
 });
 
-// FIXME: Convert this to find by Id
-app.get("/api/donuts/:name", (req, res) => {
-  for (let i = 0; i < donuts.length; i++) {
-    if (donuts[i].name === req.params.name) {
-      return res.json(donuts[i]);
-    }
-  }
+app.get("/api/donuts/:id", (req, res) => {
+  db.Donut.findById(req.params.id).then((foundDonut) => {
+    res.json(foundDonut);
+  });
 });
 
 app.post("/api/donuts", (req, res) => {
@@ -63,8 +60,19 @@ app.post("/api/donuts", (req, res) => {
   });
 });
 
-// TODO: Add PUT route for editing donuts
-// TODO: Add DELETE route for removing donuts. 
+app.put("/api/donuts/:id", (req, res) => {
+  db.Donut.findByIdAndUpdate(req.params.id, req.body, { new: true }).then(
+    (updatedDonut) => {
+      res.json(updatedDonut);
+    }
+  );
+});
+
+app.delete("/api/donuts/:id", (req, res) => {
+  db.Donut.findByIdAndDelete(req.params.id).then((result) => {
+    res.json(result);
+  });
+});
 
 // 4. Listen on the PORT.
 app.listen(PORT, () => {
