@@ -7,6 +7,8 @@ const app = express();
 // 3. Set the PORT
 const PORT = process.env.PORT || 8080;
 
+const db = require("./models");
+
 // 5. Add middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -40,29 +42,13 @@ app.get("/api/config", (req, res) => {
   });
 });
 
-const donuts = [
-  {
-    name: "glazed",
-    price: "$0.99",
-  },
-  {
-    name: "Cereal Killer",
-    price: "$3.99",
-  },
-  {
-    name: "Lemon Filled",
-    price: "$1.99",
-  },
-  {
-    name: "Bear Claw",
-    price: "$4.99",
-  },
-];
-
 app.get("/api/donuts", (req, res) => {
-  res.json(donuts);
+  db.Donut.find().then((foundDonuts) => {
+    res.json(foundDonuts);
+  });
 });
 
+// FIXME: Convert this to find by Id
 app.get("/api/donuts/:name", (req, res) => {
   for (let i = 0; i < donuts.length; i++) {
     if (donuts[i].name === req.params.name) {
@@ -72,9 +58,13 @@ app.get("/api/donuts/:name", (req, res) => {
 });
 
 app.post("/api/donuts", (req, res) => {
-  donuts.push(req.body);
-  res.json(donuts);
+  db.Donut.create(req.body).then((newDonut) => {
+    res.json(newDonut);
+  });
 });
+
+// TODO: Add PUT route for editing donuts
+// TODO: Add DELETE route for removing donuts. 
 
 // 4. Listen on the PORT.
 app.listen(PORT, () => {
